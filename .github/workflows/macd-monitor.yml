@@ -1,8 +1,8 @@
-name: ETH MACD Monitor
+name: ETH 15M MACD Monitor
 
 on:
   schedule:
-    - cron: '0,15,30,45 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -16,17 +16,17 @@ jobs:
       - name: Restore state cache
         uses: actions/cache@v4
         with:
-          path: eth_macd_state.json
-          key: macd-state-v1
+          path: eth_macd_15m_state.json
+          key: macd-15m-state-v1
           restore-keys: |
-            macd-state-
+            macd-15m-state-
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
       
-      - name: Run MACD Monitor
+      - name: Run 15M MACD Monitor
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
         run: node eth_macd_monitor.js
