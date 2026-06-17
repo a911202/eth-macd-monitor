@@ -29,4 +29,5 @@ jobs:
       - name: Run 15M MACD Monitor
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+          STARTUP_NOTIFY: '1'
         run: node eth_macd_monitor.js
