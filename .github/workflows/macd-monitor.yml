@@ -2,7 +2,7 @@ name: ETH 15M MACD Monitor
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/15 * 0-17 * * *'
   workflow_dispatch:
 
 jobs:
