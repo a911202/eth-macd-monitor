@@ -170,6 +170,9 @@ function saveState(state) {
   } catch (e) { console.error('State save error:', e.message); }
 }
 
+// --- Startup Notification ---
+const STARTUP_NOTIFY = process.env.STARTUP_NOTIFY === '1';
+
 // --- Main ---
 async function main() {
   console.log(`\n=== ETH 15M MACD Cross Monitor ===`);
@@ -240,6 +243,23 @@ async function main() {
     }
   } catch (e) {
     console.error(`Error: ${e.message}`);
+  }
+
+  // Startup notification
+  if (STARTUP_NOTIFY) {
+    console.log('\n📢 Sending startup notification...');
+    await sendFeishuWebhook(
+      '✅ ETH 15M MACD监控已启动',
+      [
+        '**监控服务已上线**',
+        '',
+        `启动时间：${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`,
+        '运行环境：GitHub Actions',
+        '监控周期：每5分钟',
+        '',
+        '此消息仅为启动确认，后续仅在检测到金叉/死叉时推送通知。',
+      ].join('\n')
+    );
   }
 
   state.lastCheck = now;
