@@ -2,7 +2,7 @@ name: ETH 15M MACD Monitor
 
 on:
   schedule:
-    - cron: '*/15 * 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -13,7 +13,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Check time (skip 0:00-7:59 CST)
+        run: |
+          HOUR_CST=$(TZ=Asia/Shanghai date +%H)
+          if [ "$HOUR_CST" -ge 0 ] && [ "$HOUR_CST" -le 7 ]; then
+            echo "⏸ Skip: CST $HOUR_CST:xx (night mode)"
+            echo "SKIP=true" >> $GITHUB_ENV
+          else
+            echo "▶ Run: CST $HOUR_CST:xx"
+          fi
+      
       - name: Restore state cache
+        if: env.SKIP != 'true'
         uses: actions/cache@v4
         with:
           path: eth_macd_15m_state.json
@@ -22,11 +33,13 @@ jobs:
             macd-15m-state-
       
       - name: Setup Node.js
+        if: env.SKIP != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
       
       - name: Run 15M MACD Monitor
+        if: env.SKIP != 'true'
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
         run: node eth_macd_monitor.js
